@@ -1,46 +1,88 @@
 /**
- * Google Apps Script — Webhook para webapp de resgate de cupom [Floripa]
+ * Google Apps Script — Webapp de resgate de cupom [Floripa]
  *
- * COMO CONFIGURAR (via Sheet — caminho mais simples):
- * 1. Abra a planilha → Extensões → Apps Script
- * 2. Apague o código existente e cole este aqui
- * 3. Salve (Ctrl+S)
- * 4. Clique em "Implantar" → "Nova implantação" → tipo: "App da Web"
- *    - Executar como: "Eu"
- *    - Quem tem acesso: "Qualquer pessoa"
- * 5. Autorize o acesso quando solicitado
- * 6. Copie a URL gerada e cole em index.html (WEBHOOK_URL)
+ * ABAS DA GOOGLE SHEET:
+ * - "Whitelist" → importar whitelist.csv (colunas: phone_normalized, segment)
+ * - "Resgates"  → criada automaticamente pelo script
+ *
+ * CUPONS (placeholders — substituir quando Vic confirmar os valores):
  */
 const SHEET_ID = "1OheSy15dqFwuzkRDJMmd5EID8yDXIVMj1DtrX5otmJc";
-const SHEET_NAME = "Resgates"; // nome da aba — será criada automaticamente se não existir
+
+const CUPONS = {
+  "1-viagem":    "FLORIPA1V",    // PLACEHOLDER: cupom para usuários com 1 viagem
+  "2-3-viagens": "FLORIPA23V",   // PLACEHOLDER: cupom para usuários com 2-3 viagens
+};
+
+// ---------------------------------------------------------------------------
+
+function normalizePhone(raw) {
+  var digits = String(raw).replace(/\D/g, "");
+  if (!digits.startsWith("55")) digits = "55" + digits;
+  return digits;
+}
+
+function jsonResponse(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
 
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    var data      = JSON.parse(e.postData.contents);
+    var phoneNorm = normalizePhone(data.telefone || "");
 
-    const ss = SpreadsheetApp.openById(SHEET_ID);
-    let sheet = ss.getSheetByName(SHEET_NAME);
-
-    // Cria a aba "Resgates" se ainda não existir
-    if (!sheet) {
-      sheet = ss.insertSheet(SHEET_NAME);
+    if (phoneNorm.length < 12) {
+      return jsonResponse({ status: "error", message: "Telefone inválido." });
     }
 
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(["Timestamp", "Nome", "Telefone", "Cupom"]);
+    var ss        = SpreadsheetApp.openById(SHEET_ID);
+    var wlSheet   = ss.getSheetByName("Whitelist");
+    var rgSheet   = ss.getSheetByName("Resgates");
+
+    if (!rgSheet) rgSheet = ss.insertSheet("Resgates");
+
+    // ── Carregar whitelist (phone_normalized → segment) ──────────────────
+    var wlData   = wlSheet.getRange(2, 1, wlSheet.getLastRow() - 1, 2).getValues();
+    var phoneMap = {};
+    for (var i = 0; i < wlData.length; i++) {
+      phoneMap[String(wlData[i][0])] = wlData[i][1];
     }
 
-    sheet.appendRow([
-      data.timestamp || new Date().toISOString(),
+    var segment = phoneMap[phoneNorm];
+    if (!segment) {
+      return jsonResponse({ status: "not_eligible" });
+    }
+
+    var cupom = CUPONS[segment] || "FLORIPA2026";
+
+    // ── Verificar duplicata ───────────────────────────────────────────────
+    var rgLastRow = rgSheet.getLastRow();
+    if (rgLastRow > 1) {
+      var rgPhones = rgSheet.getRange(2, 3, rgLastRow - 1, 1).getValues().flat();
+      for (var j = 0; j < rgPhones.length; j++) {
+        if (normalizePhone(rgPhones[j]) === phoneNorm) {
+          return jsonResponse({ status: "already_redeemed", cupom: cupom });
+        }
+      }
+    }
+
+    // ── Cabeçalho na primeira execução ───────────────────────────────────
+    if (rgLastRow === 0) {
+      rgSheet.appendRow(["timestamp", "nome", "telefone", "segmento", "cupom"]);
+    }
+
+    // ── Gravar e retornar ─────────────────────────────────────────────────
+    rgSheet.appendRow([
+      new Date().toISOString(),
       data.nome || "",
       data.telefone || "",
-      data.cupom || "",
-      // PLACEHOLDER: adicionar colunas conforme campos adicionais definidos pela Vic
+      segment,
+      cupom,
     ]);
 
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: "ok" }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return jsonResponse({ status: "ok", cupom: cupom, segment: segment });
 
   } catch (err) {
     return ContentService
@@ -49,7 +91,6 @@ function doPost(e) {
   }
 }
 
-// Permite testar via GET no browser
 function doGet() {
   return ContentService
     .createTextOutput("Webhook ativo.")

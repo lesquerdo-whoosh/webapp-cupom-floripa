@@ -169,6 +169,32 @@
       margin-top: 14px;
     }
 
+    /* ── Non-eligible / already redeemed states ── */
+    #ineligible-state, #redeemed-state { display: none; }
+
+    .state-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .state-icon svg {
+      width: 26px;
+      height: 26px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .icon-warning { background: #d97706; }
+    .icon-info    { background: #2563eb; }
+
     /* ── Success state ── */
     #success-state { display: none; }
 
@@ -288,6 +314,41 @@
         </div>
       </div>
 
+      <!-- ── Not eligible state ── -->
+      <div id="ineligible-state">
+        <div class="state-icon icon-warning">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+        </div>
+        <p class="eyebrow" style="text-align:center">Número não encontrado</p>
+        <div class="heading-wrap" style="text-align:center">
+          <h1 style="font-size:20px">Este número não está na lista desta campanha</h1>
+          <span class="key-visual"></span>
+          <p class="description">Verifique se digitou o número correto com DDD. Se o problema persistir, entre em contato pelo suporte Whoosh.</p>
+        </div>
+        <button class="btn-primary" onclick="resetForm()">Tentar outro número</button>
+      </div>
+
+      <!-- ── Already redeemed state ── -->
+      <div id="redeemed-state">
+        <div class="state-icon icon-info">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <p class="eyebrow" style="text-align:center">Cupom já resgatado</p>
+        <div class="heading-wrap" style="text-align:center">
+          <h1 style="font-size:20px">Você já resgatou seu cupom!</h1>
+          <span class="key-visual"></span>
+          <p class="description">Seu código já foi gerado anteriormente:</p>
+        </div>
+        <div class="coupon-box">
+          <div class="coupon-label">Seu cupom</div>
+          <div class="coupon-code" id="redeemed-code">—</div>
+        </div>
+        <hr />
+        <p class="instructions">
+          Abra o app Whoosh, acesse <strong>Carteira → Cupons</strong> e insira o código acima.
+        </p>
+      </div>
+
       <!-- ── Success state ── -->
       <div id="success-state">
         <div class="success-check">
@@ -322,41 +383,70 @@
 
   <script>
     const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzJwiCyI8EIk4u--j7oo2qP1Ldxm8USyLbUaMEbQVgu2sbUwMfJO0xpeFDC_c494vIFnA/exec";
-    const COUPON_CODE = "FLORIPA2026"; // PLACEHOLDER: confirmar com Vic
 
     const form      = document.getElementById("resgate-form");
     const submitBtn = document.getElementById("submit-btn");
     const errorMsg  = document.getElementById("error-msg");
 
+    function showState(id) {
+      ["form-state", "success-state", "ineligible-state", "redeemed-state"]
+        .forEach(s => document.getElementById(s).style.display = s === id ? "block" : "none");
+    }
+
+    function resetForm() {
+      showState("form-state");
+      submitBtn.disabled    = false;
+      submitBtn.textContent = "Resgatar cupom";
+      errorMsg.style.display = "none";
+    }
+
+    function normalizePhone(raw) {
+      const digits = raw.replace(/\D/g, "");
+      return digits.startsWith("55") ? digits : "55" + digits;
+    }
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       submitBtn.disabled    = true;
-      submitBtn.textContent = "Enviando…";
+      submitBtn.textContent = "Verificando…";
       errorMsg.style.display = "none";
 
+      const nome     = document.getElementById("nome").value.trim();
+      const telefone = document.getElementById("telefone").value.trim();
+
       const payload = {
-        nome:      document.getElementById("nome").value.trim(),
-        telefone:  document.getElementById("telefone").value.trim(),
+        nome,
+        telefone: normalizePhone(telefone),
         timestamp: new Date().toISOString(),
-        cupom:     COUPON_CODE,
       };
 
       try {
-        await fetch(WEBHOOK_URL, {
+        const res  = await fetch(WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-          mode: "no-cors",
         });
+        const json = await res.json();
 
-        document.getElementById("coupon-display").textContent = COUPON_CODE;
-        document.getElementById("form-state").style.display   = "none";
-        document.getElementById("success-state").style.display = "block";
+        if (json.status === "ok") {
+          document.getElementById("coupon-display").textContent = json.cupom;
+          showState("success-state");
+
+        } else if (json.status === "already_redeemed") {
+          document.getElementById("redeemed-code").textContent = json.cupom;
+          showState("redeemed-state");
+
+        } else if (json.status === "not_eligible") {
+          showState("ineligible-state");
+
+        } else {
+          throw new Error(json.message || "Erro desconhecido");
+        }
 
       } catch (err) {
-        errorMsg.style.display    = "block";
-        submitBtn.disabled        = false;
-        submitBtn.textContent     = "Resgatar cupom";
+        errorMsg.style.display = "block";
+        submitBtn.disabled     = false;
+        submitBtn.textContent  = "Resgatar cupom";
       }
     });
   </script>
