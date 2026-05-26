@@ -37,7 +37,7 @@
       font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--steel);
-      min-height: 100dvh; /* dvh: responde ao teclado virtual em mobile */
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
     }
@@ -65,7 +65,7 @@
       padding: 48px 24px;
     }
 
-    /* ── Card — entra com animação ── */
+    /* ── Card ── */
     .card {
       background: var(--white);
       border-radius: 20px;
@@ -87,7 +87,7 @@
 
     /* ── Eyebrow ── */
     .eyebrow {
-      font-size: 12px; /* floor 12px — CLAUDE.md */
+      font-size: 12px;
       font-weight: 600;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -136,11 +136,11 @@
 
     input {
       width: 100%;
-      min-height: 44px; /* touch target mínimo */
+      min-height: 44px;
       padding: 11px 16px;
       border: 1.5px solid var(--border);
       border-radius: 10px;
-      font-size: 15px;
+      font-size: 16px; /* ≥16px evita zoom automático no iOS Safari */
       font-family: inherit;
       color: var(--steel);
       background: var(--white);
@@ -149,15 +149,29 @@
     }
 
     input:focus { border-color: var(--yellow); }
+    input.input-error { border-color: var(--danger); }
     input::placeholder { color: var(--placeholder); }
+
+    .field-error {
+      display: none;
+      font-size: 12px;
+      color: var(--danger);
+      margin-top: 6px;
+    }
+
+    .field-error.visible { display: block; }
 
     /* ── Botão primário ── */
     .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       width: 100%;
-      min-height: 44px; /* touch target mínimo */
+      min-height: 44px;
       padding: 12px 16px;
       background: var(--yellow);
-      color: var(--steel); /* escuro sobre amarelo — regra crítica de contraste */
+      color: var(--steel);
       border: none;
       border-radius: 10px;
       font-size: 15px;
@@ -169,12 +183,30 @@
       transition: background 0.15s, transform 0.1s;
     }
 
-    .btn-primary:hover  { background: var(--yellow-dim); }
-    .btn-primary:active { transform: scale(0.99); }
+    .btn-primary:hover:not(:disabled)  { background: var(--yellow-dim); }
+    .btn-primary:active:not(:disabled) { transform: scale(0.99); }
     .btn-primary:disabled {
       background: var(--disabled-bg);
       color: var(--disabled-text);
       cursor: not-allowed;
+    }
+
+    /* ── Spinner de loading ── */
+    .spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(26, 35, 50, 0.2);
+      border-top-color: var(--steel);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: spin 0.7s linear infinite;
+    }
+
+    .btn-primary.is-loading .spinner { display: block; }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     /* ── Mensagem de erro genérico ── */
@@ -225,7 +257,7 @@
     }
 
     .coupon-label {
-      font-size: 12px; /* floor 12px — CLAUDE.md */
+      font-size: 12px;
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -238,6 +270,7 @@
       font-weight: 700;
       color: var(--steel);
       letter-spacing: 4px;
+      word-break: break-all; /* evita overflow em códigos longos em 320px */
     }
 
     /* ── Botão de abrir o app ── */
@@ -264,13 +297,6 @@
 
     .btn-app:hover { background: var(--steel); }
 
-    /* ── Divisor ── */
-    hr {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 24px 0;
-    }
-
     /* ── Transição entre estados ── */
     .state-panel { display: none; }
 
@@ -286,10 +312,9 @@
 
     /* ── Reduz movimento se preferido ── */
     @media (prefers-reduced-motion: reduce) {
-      .card { animation: none; opacity: 1; transform: none; }
-      .state-panel.state-active { animation: none; }
-      .btn-primary { transition: none; }
-      input { transition: none; }
+      .card, .state-panel.state-active { animation: none; opacity: 1; transform: none; }
+      .btn-primary, .btn-app, input { transition: none; }
+      .spinner { animation: none; opacity: 0.5; }
     }
 
     /* ── Footer ── */
@@ -307,7 +332,7 @@
       .card  { padding: 32px 20px; border-radius: 16px; }
       h1     { font-size: 22px; }
       h1.h1-sm { font-size: 18px; }
-      .coupon-code { font-size: 26px; }
+      .coupon-code { font-size: 24px; letter-spacing: 2px; }
     }
   </style>
 </head>
@@ -329,16 +354,20 @@
           <p class="description">Digite seu número de telefone para receber seu cupom exclusivo Whoosh.</p>
         </div>
 
-        <form id="resgate-form">
+        <form id="resgate-form" novalidate>
           <div class="form-group">
             <label for="telefone">Número de telefone</label>
-            <input type="tel" id="telefone" name="telefone" placeholder="(DDD) 99999-9999" required autocomplete="tel" inputmode="numeric" />
+            <input type="tel" id="telefone" name="telefone" placeholder="(DDD) 99999-9999"
+                   autocomplete="tel" inputmode="numeric" />
+            <p class="field-error" id="phone-error">Digite o DDD + número completo.</p>
           </div>
-          <!-- PLACEHOLDER: campos adicionais conforme definição da Vic -->
-          <button type="submit" id="submit-btn" class="btn-primary">Resgatar cupom</button>
+          <button type="submit" id="submit-btn" class="btn-primary">
+            <span class="spinner" aria-hidden="true"></span>
+            <span id="btn-text">Resgatar cupom</span>
+          </button>
         </form>
 
-        <div class="error-msg" id="error-msg">
+        <div class="error-msg" id="error-msg" role="alert">
           Algo deu errado. Tente novamente em instantes.
         </div>
       </div>
@@ -354,7 +383,9 @@
           <span class="key-visual"></span>
           <p class="description">Verifique se digitou o número correto com DDD. Se o problema persistir, entre em contato pelo suporte Whoosh.</p>
         </div>
-        <button class="btn-primary" onclick="resetForm()">Tentar outro número</button>
+        <button id="retry-btn" class="btn-primary">
+          <span id="retry-text">Tentar outro número</span>
+        </button>
       </div>
 
       <!-- ── Already redeemed state ── -->
@@ -400,28 +431,38 @@
 
   <script>
     const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzJwiCyI8EIk4u--j7oo2qP1Ldxm8USyLbUaMEbQVgu2sbUwMfJO0xpeFDC_c494vIFnA/exec";
+    const COOLDOWN_MS = 3000; // mínimo entre tentativas — limita enumeração via browser
 
     const STATES    = ["form-state", "success-state", "ineligible-state", "redeemed-state"];
     const form      = document.getElementById("resgate-form");
     const submitBtn = document.getElementById("submit-btn");
+    const btnText   = document.getElementById("btn-text");
     const errorMsg  = document.getElementById("error-msg");
+    const phoneInput  = document.getElementById("telefone");
+    const phoneError  = document.getElementById("phone-error");
+
+    let lastSubmit = 0;
 
     function showState(id) {
       STATES.forEach(s => {
         const el = document.getElementById(s);
         el.classList.remove("state-active");
-        if (s === id) {
-          // rAF garante que a remoção da classe processa antes da adição (reinicia animação)
-          requestAnimationFrame(() => el.classList.add("state-active"));
-        }
+        if (s === id) requestAnimationFrame(() => el.classList.add("state-active"));
       });
+    }
+
+    function setLoading(on) {
+      submitBtn.disabled = on;
+      submitBtn.classList.toggle("is-loading", on);
+      btnText.textContent = on ? "Verificando…" : "Resgatar cupom";
     }
 
     function resetForm() {
       showState("form-state");
-      submitBtn.disabled     = false;
-      submitBtn.textContent  = "Resgatar cupom";
+      setLoading(false);
       errorMsg.style.display = "none";
+      phoneInput.classList.remove("input-error");
+      phoneError.classList.remove("visible");
     }
 
     function normalizePhone(raw) {
@@ -437,23 +478,42 @@
       return "(" + d.slice(0,2) + ") " + d.slice(2,7) + "-" + d.slice(7);
     }
 
-    document.getElementById("telefone").addEventListener("input", (e) => {
+    phoneInput.addEventListener("input", (e) => {
       const cursor = e.target.selectionStart;
       const prev   = e.target.value;
       const next   = formatPhone(prev);
       e.target.value = next;
       const diff = next.length - prev.length;
       e.target.setSelectionRange(cursor + diff, cursor + diff);
+      // limpa erro de validação ao editar
+      phoneInput.classList.remove("input-error");
+      phoneError.classList.remove("visible");
     });
+
+    document.getElementById("retry-btn").addEventListener("click", resetForm);
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      submitBtn.disabled    = true;
-      submitBtn.textContent = "Verificando…";
+
+      // cooldown entre tentativas
+      const now = Date.now();
+      if (now - lastSubmit < COOLDOWN_MS) return;
+
+      // validação client-side: telefone deve ter 12 ou 13 dígitos após normalização
+      const normalized = normalizePhone(phoneInput.value);
+      if (normalized.length < 12 || normalized.length > 13) {
+        phoneInput.classList.add("input-error");
+        phoneError.classList.add("visible");
+        phoneInput.focus();
+        return;
+      }
+
+      lastSubmit = now;
+      setLoading(true);
       errorMsg.style.display = "none";
 
       const payload = {
-        telefone:  normalizePhone(document.getElementById("telefone").value),
+        telefone:  normalized,
         timestamp: new Date().toISOString(),
       };
 
@@ -484,8 +544,7 @@
 
       } catch (err) {
         errorMsg.style.display = "block";
-        submitBtn.disabled     = false;
-        submitBtn.textContent  = "Resgatar cupom";
+        setLoading(false);
       }
     });
   </script>
