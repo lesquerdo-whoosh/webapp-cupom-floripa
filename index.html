@@ -303,7 +303,7 @@
           </div>
           <div class="form-group">
             <label for="telefone">WhatsApp</label>
-            <input type="tel" id="telefone" name="telefone" placeholder="(48) 99999-9999" required autocomplete="tel" />
+            <input type="tel" id="telefone" name="telefone" placeholder="(DDD) 99999-9999" required autocomplete="tel" inputmode="numeric" />
           </div>
           <!-- PLACEHOLDER: campos adicionais conforme definição da Vic -->
           <button type="submit" id="submit-btn" class="btn-primary">Resgatar cupom</button>
@@ -404,6 +404,25 @@
       const digits = raw.replace(/\D/g, "");
       return digits.startsWith("55") ? digits : "55" + digits;
     }
+
+    function formatPhone(value) {
+      const d = value.replace(/\D/g, "").slice(0, 11);
+      if (d.length <=  2) return d.length ? "(" + d : "";
+      if (d.length <=  6) return "(" + d.slice(0,2) + ") " + d.slice(2);
+      if (d.length <= 10) return "(" + d.slice(0,2) + ") " + d.slice(2,6) + "-" + d.slice(6);
+      return "(" + d.slice(0,2) + ") " + d.slice(2,7) + "-" + d.slice(7);
+    }
+
+    const telefoneInput = document.getElementById("telefone");
+    telefoneInput.addEventListener("input", (e) => {
+      const cursor = e.target.selectionStart;
+      const prev   = e.target.value;
+      const next   = formatPhone(prev);
+      e.target.value = next;
+      // Reposiciona o cursor se o usuário estiver editando no meio do campo
+      const diff = next.length - prev.length;
+      e.target.setSelectionRange(cursor + diff, cursor + diff);
+    });
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
