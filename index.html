@@ -240,21 +240,36 @@
       letter-spacing: 4px;
     }
 
+    /* ── Botão de abrir o app ── */
+    .btn-app {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 44px;
+      padding: 12px 16px;
+      margin-top: 16px;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 0.3px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-app:hover { background: var(--steel); }
+
     /* ── Divisor ── */
     hr {
       border: none;
       border-top: 1px solid var(--border);
       margin: 24px 0;
     }
-
-    /* ── Instruções ── */
-    .instructions {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .instructions strong { color: var(--steel); }
 
     /* ── Transição entre estados ── */
     .state-panel { display: none; }
@@ -311,7 +326,7 @@
         <div class="heading-wrap">
           <h1>Resgate seu cupom de desconto</h1>
           <span class="key-visual"></span>
-          <p class="description">Digite seu WhatsApp para receber seu cupom exclusivo Whoosh.</p>
+          <p class="description">Digite seu número de telefone para receber seu cupom exclusivo Whoosh.</p>
         </div>
 
         <form id="resgate-form">
@@ -357,10 +372,7 @@
           <div class="coupon-label">Seu cupom</div>
           <div class="coupon-code" id="redeemed-code">—</div>
         </div>
-        <hr />
-        <p class="instructions">
-          Abra o app Whoosh, acesse <strong>Carteira → Cupons</strong> e insira o código acima.
-        </p>
+        <a id="open-app-redeemed" href="#" class="btn-app">Usar cupom no Whoosh</a>
       </div>
 
       <!-- ── Success state ── -->
@@ -372,18 +384,13 @@
         <div class="heading-wrap text-center">
           <h1>Pronto, é seu.</h1>
           <span class="key-visual"></span>
-          <p class="description">Use o código abaixo no aplicativo Whoosh:</p>
+          <p class="description">Toque no botão abaixo para ativar seu desconto direto no app:</p>
         </div>
         <div class="coupon-box">
           <div class="coupon-label">Seu cupom</div>
           <div class="coupon-code" id="coupon-display">—</div>
-          <!-- PLACEHOLDER: código definido pela Vic -->
         </div>
-        <hr />
-        <p class="instructions">
-          Abra o app Whoosh, acesse <strong>Carteira → Cupons</strong> e insira o código acima para ativar seu desconto.
-          <!-- PLACEHOLDER: instrução de uso a confirmar com produto -->
-        </p>
+        <a id="open-app-success" href="#" class="btn-app">Usar cupom no Whoosh</a>
       </div>
 
     </div>
@@ -460,10 +467,12 @@
 
         if (json.status === "ok") {
           document.getElementById("coupon-display").textContent = json.cupom;
+          document.getElementById("open-app-success").href = "https://wsh.bike?pc=" + encodeURIComponent(json.cupom);
           showState("success-state");
 
         } else if (json.status === "already_redeemed") {
           document.getElementById("redeemed-code").textContent = json.cupom;
+          document.getElementById("open-app-redeemed").href = "https://wsh.bike?pc=" + encodeURIComponent(json.cupom);
           showState("redeemed-state");
 
         } else if (json.status === "not_eligible") {

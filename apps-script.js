@@ -2,17 +2,11 @@
  * Google Apps Script — Webapp de resgate de cupom [Floripa]
  *
  * ABAS DA GOOGLE SHEET:
- * - "Whitelist" → importar whitelist.csv (colunas: phone_normalized, segment)
+ * - "Whitelist" → importar whitelist.csv (colunas: phone_normalized, segment, cupom)
+ *                 Coluna "cupom" preenchida pela Whoosh Russia com códigos únicos por usuário.
  * - "Resgates"  → criada automaticamente pelo script
- *
- * CUPONS (placeholders — substituir quando Vic confirmar os valores):
  */
 const SHEET_ID = "1OheSy15dqFwuzkRDJMmd5EID8yDXIVMj1DtrX5otmJc";
-
-const CUPONS = {
-  "1-viagem":    "FLORIPA1V",    // PLACEHOLDER: cupom para usuários com 1 viagem
-  "2-3-viagens": "FLORIPA23V",   // PLACEHOLDER: cupom para usuários com 2-3 viagens
-};
 
 // ---------------------------------------------------------------------------
 
@@ -37,25 +31,26 @@ function doPost(e) {
       return jsonResponse({ status: "error", message: "Telefone inválido." });
     }
 
-    var ss        = SpreadsheetApp.openById(SHEET_ID);
-    var wlSheet   = ss.getSheetByName("Whitelist");
-    var rgSheet   = ss.getSheetByName("Resgates");
+    var ss      = SpreadsheetApp.openById(SHEET_ID);
+    var wlSheet = ss.getSheetByName("Whitelist");
+    var rgSheet = ss.getSheetByName("Resgates");
 
     if (!rgSheet) rgSheet = ss.insertSheet("Resgates");
 
-    // ── Carregar whitelist (phone_normalized → segment) ──────────────────
-    var wlData   = wlSheet.getRange(2, 1, wlSheet.getLastRow() - 1, 2).getValues();
+    // ── Carregar whitelist (phone_normalized → {segment, cupom}) ─────────
+    var wlData   = wlSheet.getRange(2, 1, wlSheet.getLastRow() - 1, 3).getValues();
     var phoneMap = {};
     for (var i = 0; i < wlData.length; i++) {
-      phoneMap[String(wlData[i][0])] = wlData[i][1];
+      phoneMap[String(wlData[i][0])] = { segment: wlData[i][1], cupom: wlData[i][2] };
     }
 
-    var segment = phoneMap[phoneNorm];
-    if (!segment) {
+    var entry = phoneMap[phoneNorm];
+    if (!entry || !entry.cupom) {
       return jsonResponse({ status: "not_eligible" });
     }
 
-    var cupom = CUPONS[segment] || "FLORIPA2026";
+    var segment = entry.segment;
+    var cupom   = String(entry.cupom).trim();
 
     // ── Verificar duplicata ───────────────────────────────────────────────
     var rgLastRow = rgSheet.getLastRow();
@@ -70,13 +65,12 @@ function doPost(e) {
 
     // ── Cabeçalho na primeira execução ───────────────────────────────────
     if (rgLastRow === 0) {
-      rgSheet.appendRow(["timestamp", "nome", "telefone", "segmento", "cupom"]);
+      rgSheet.appendRow(["timestamp", "telefone", "segmento", "cupom"]);
     }
 
     // ── Gravar e retornar ─────────────────────────────────────────────────
     rgSheet.appendRow([
       new Date().toISOString(),
-      data.nome || "",
       data.telefone || "",
       segment,
       cupom,

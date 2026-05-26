@@ -32,11 +32,14 @@ success:   #16a34a
 - **Logo:** `whoosh-logo.png` — wordmark oficial; usar sempre sobre fundo `#0f172a`
 
 ### Placeholders ativos
-Parâmetros pendentes de confirmação com Vic (Marketing):
-- `COUPON_CODE` — atualmente `FLORIPA2026` (genérico); pode virar único por usuário
-- Campos do formulário — atualmente nome + telefone; podem ter campos extras
-- Instrução de uso do cupom — confirmar fluxo no app Whoosh
+- Instrução de uso do cupom — confirmar fluxo no app Whoosh ("Carteira → Cupons" a confirmar)
 - Canal de envio do link — não afeta o webapp
+
+### Decisões confirmadas (não alterar)
+- **Cupom único por usuário** — coluna `cupom` na aba Whitelist, preenchida pela Whoosh Russia. Apps Script lê diretamente dessa coluna — sem mapa por segmento.
+- **Desconto único (40%)** — sem diferenciação por segmento para o usuário. Segmento (`1-viagem` / `2-3-viagens`) é gravado em Resgates apenas para analytics.
+- **Campo nome removido** — formulário coleta só telefone. Resgates grava: timestamp, telefone, segmento, cupom.
+- **Já resgatado exibe o cupom** — ao redigitar o telefone, o usuário vê seu código novamente.
 
 ### Mobile — Primeira Classe
 O link será enviado via WhatsApp/EDNA — **a maioria dos acessos é mobile.**
