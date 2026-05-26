@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resgate seu cupom — Whoosh Floripa</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px 32px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1a1a1a;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+
+    .logo span { color: #00c853; }
+
+    .subtitle {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    .description {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 15px;
+      color: #1a1a1a;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    input:focus { border-color: #00c853; }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #00c853;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: #00b347; }
+    button:disabled { background: #b2dfdb; cursor: not-allowed; }
+
+    /* Success state */
+    .success { display: none; }
+
+    .coupon-box {
+      background: #f0fdf4;
+      border: 2px dashed #00c853;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+
+    .coupon-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #00c853;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .coupon-code {
+      font-size: 32px;
+      font-weight: 800;
+      color: #1a1a1a;
+      letter-spacing: 2px;
+    }
+
+    .coupon-instructions {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+      margin-top: 16px;
+    }
+
+    .error-msg {
+      display: none;
+      background: #fff3f3;
+      border: 1px solid #ffcdd2;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+      color: #c62828;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+
+    <!-- Form state -->
+    <div id="form-state">
+      <div class="logo">WHO<span>OSH</span></div>
+      <div class="subtitle">Florianópolis</div>
+
+      <h1>Resgate seu cupom</h1>
+      <p class="description">
+        Preencha seus dados abaixo para receber seu cupom de desconto exclusivo.
+      </p>
+
+      <form id="resgate-form">
+        <div class="form-group">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" name="nome" placeholder="Seu nome" required autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="telefone">WhatsApp</label>
+          <input type="tel" id="telefone" name="telefone" placeholder="(48) 99999-9999" required autocomplete="tel" />
+        </div>
+        <!-- PLACEHOLDER: adicionar campos conforme definição da Vic -->
+        <button type="submit" id="submit-btn">Resgatar cupom</button>
+      </form>
+
+      <div class="error-msg" id="error-msg">
+        Algo deu errado. Tente novamente ou entre em contato via WhatsApp.
+      </div>
+    </div>
+
+    <!-- Success state -->
+    <div class="success" id="success-state">
+      <div class="logo">WHO<span>OSH</span></div>
+      <div class="subtitle">Florianópolis</div>
+
+      <h1>Cupom resgatado!</h1>
+      <p class="description">Use o código abaixo no aplicativo Whoosh:</p>
+
+      <div class="coupon-box">
+        <div class="coupon-label">Seu cupom</div>
+        <div class="coupon-code" id="coupon-display">FLORIPA2026</div>
+        <!-- PLACEHOLDER: código será definido pela Vic (genérico vs. único) -->
+      </div>
+
+      <p class="coupon-instructions">
+        Abra o app Whoosh, acesse <strong>Carteira → Cupons</strong> e insira o código acima.
+        <!-- PLACEHOLDER: instrução de uso a confirmar com time de produto -->
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    // PLACEHOLDER: substituir pela URL real do Google Apps Script após configuração
+    const WEBHOOK_URL = "SUBSTITUIR_PELA_URL_DO_APPS_SCRIPT";
+
+    // PLACEHOLDER: código genérico até Vic confirmar a mecânica
+    const COUPON_CODE = "FLORIPA2026";
+
+    const form = document.getElementById("resgate-form");
+    const submitBtn = document.getElementById("submit-btn");
+    const errorMsg = document.getElementById("error-msg");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Enviando...";
+      errorMsg.style.display = "none";
+
+      const payload = {
+        nome: document.getElementById("nome").value.trim(),
+        telefone: document.getElementById("telefone").value.trim(),
+        timestamp: new Date().toISOString(),
+        cupom: COUPON_CODE,
+      };
+
+      try {
+        // Se webhook não configurado ainda, simula sucesso em dev
+        if (WEBHOOK_URL === "SUBSTITUIR_PELA_URL_DO_APPS_SCRIPT") {
+          await new Promise(r => setTimeout(r, 800)); // simula latência
+        } else {
+          await fetch(WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+        }
+
+        document.getElementById("coupon-display").textContent = COUPON_CODE;
+        document.getElementById("form-state").style.display = "none";
+        document.getElementById("success-state").style.display = "block";
+
+      } catch (err) {
+        errorMsg.style.display = "block";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Resgatar cupom";
+      }
+    });
+  </script>
+</body>
+</html>
