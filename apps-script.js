@@ -2,8 +2,7 @@
  * Google Apps Script — Webapp de resgate de cupom [Floripa]
  *
  * ABAS DA GOOGLE SHEET:
- * - "Whitelist" → importar whitelist.csv (colunas: phone_normalized, segment, cupom)
- *                 Coluna "cupom" preenchida pela Whoosh Russia com códigos únicos por usuário.
+ * - "Whitelist" → colunas: phone_normalized, cupom
  * - "Resgates"  → criada automaticamente pelo script
  */
 const SHEET_ID = "1OheSy15dqFwuzkRDJMmd5EID8yDXIVMj1DtrX5otmJc";
@@ -37,25 +36,23 @@ function doPost(e) {
 
     if (!rgSheet) rgSheet = ss.insertSheet("Resgates");
 
-    // ── Carregar whitelist (phone_normalized → {segment, cupom}) ─────────
-    var wlData   = wlSheet.getRange(2, 1, wlSheet.getLastRow() - 1, 3).getValues();
+    // ── Carregar whitelist (phone_normalized → cupom) ─────────────────────
+    var wlData   = wlSheet.getRange(2, 1, wlSheet.getLastRow() - 1, 2).getValues();
     var phoneMap = {};
     for (var i = 0; i < wlData.length; i++) {
-      phoneMap[String(wlData[i][0])] = { segment: wlData[i][1], cupom: wlData[i][2] };
+      phoneMap[String(wlData[i][0])] = String(wlData[i][1]).trim();
     }
 
-    var entry = phoneMap[phoneNorm];
-    if (!entry || !entry.cupom) {
+    var cupom = phoneMap[phoneNorm];
+    if (!cupom) {
       return jsonResponse({ status: "not_eligible" });
     }
 
-    var segment = entry.segment;
-    var cupom   = String(entry.cupom).trim();
-
     // ── Verificar duplicata ───────────────────────────────────────────────
+    // Resgates: col 1 = timestamp, col 2 = telefone, col 3 = cupom
     var rgLastRow = rgSheet.getLastRow();
     if (rgLastRow > 1) {
-      var rgPhones = rgSheet.getRange(2, 3, rgLastRow - 1, 1).getValues().flat();
+      var rgPhones = rgSheet.getRange(2, 2, rgLastRow - 1, 1).getValues().flat();
       for (var j = 0; j < rgPhones.length; j++) {
         if (normalizePhone(rgPhones[j]) === phoneNorm) {
           return jsonResponse({ status: "already_redeemed", cupom: cupom });
@@ -65,18 +62,17 @@ function doPost(e) {
 
     // ── Cabeçalho na primeira execução ───────────────────────────────────
     if (rgLastRow === 0) {
-      rgSheet.appendRow(["timestamp", "telefone", "segmento", "cupom"]);
+      rgSheet.appendRow(["timestamp", "telefone", "cupom"]);
     }
 
     // ── Gravar e retornar ─────────────────────────────────────────────────
     rgSheet.appendRow([
       new Date().toISOString(),
       data.telefone || "",
-      segment,
       cupom,
     ]);
 
-    return jsonResponse({ status: "ok", cupom: cupom, segment: segment });
+    return jsonResponse({ status: "ok", cupom: cupom });
 
   } catch (err) {
     return ContentService
