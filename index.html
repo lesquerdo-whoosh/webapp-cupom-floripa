@@ -11,24 +11,33 @@
     /* ── Reset & base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Design tokens — todas as cores passam por aqui ── */
     :root {
-      --yellow:      #ffb928;   /* Whoosh trademark yellow */
-      --yellow-bg:   #fffbeb;   /* yellow tint for surfaces */
-      --yellow-dim:  #e6a720;   /* hover state */
-      --steel:       #1a2332;   /* Whoosh Steel — main text */
-      --navy:        #0f172a;   /* dark background */
-      --muted:       #64748b;   /* secondary text */
-      --border:      #e2e8f0;
-      --bg:          #f8fafc;
-      --white:       #ffffff;
-      --success:     #16a34a;
+      --yellow:       #ffb928;
+      --yellow-bg:    #fffbeb;
+      --yellow-dim:   #e6a720;
+      --steel:        #1a2332;
+      --navy:         #0f172a;
+      --muted:        #64748b;
+      --placeholder:  #94a3b8;
+      --border:       #e2e8f0;
+      --bg:           #f8fafc;
+      --white:        #ffffff;
+      --success:      #16a34a;
+      --warning:      #d97706;
+      --info:         #2563eb;
+      --danger:       #dc2626;
+      --danger-bg:    #fef2f2;
+      --danger-border:#fecaca;
+      --disabled-bg:  #fde68a;
+      --disabled-text:#92400e;
     }
 
     body {
       font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--steel);
-      min-height: 100vh;
+      min-height: 100dvh; /* dvh: responde ao teclado virtual em mobile */
       display: flex;
       flex-direction: column;
     }
@@ -56,7 +65,7 @@
       padding: 48px 24px;
     }
 
-    /* ── Card ── */
+    /* ── Card — entra com animação ── */
     .card {
       background: var(--white);
       border-radius: 20px;
@@ -64,11 +73,21 @@
       max-width: 440px;
       width: 100%;
       box-shadow: 0 4px 24px rgba(15, 23, 42, 0.07);
+      opacity: 0;
+      transform: translateY(10px);
+      animation: cardEnter 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
+
+    @keyframes cardEnter {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Utilitários ── */
+    .text-center { text-align: center; }
 
     /* ── Eyebrow ── */
     .eyebrow {
-      font-size: 11px;
+      font-size: 12px; /* floor 12px — CLAUDE.md */
       font-weight: 600;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -76,10 +95,8 @@
       margin-bottom: 14px;
     }
 
-    /* ── Heading + key visual underline (brand guide) ── */
-    .heading-wrap {
-      margin-bottom: 28px;
-    }
+    /* ── Heading + key visual ── */
+    .heading-wrap { margin-bottom: 28px; }
 
     h1 {
       font-size: 26px;
@@ -89,7 +106,8 @@
       margin-bottom: 10px;
     }
 
-    /* Yellow key visual underline — Brand Guidelines */
+    h1.h1-sm { font-size: 20px; }
+
     .key-visual {
       display: inline-block;
       height: 3px;
@@ -118,7 +136,8 @@
 
     input {
       width: 100%;
-      padding: 13px 16px;
+      min-height: 44px; /* touch target mínimo */
+      padding: 11px 16px;
       border: 1.5px solid var(--border);
       border-radius: 10px;
       font-size: 15px;
@@ -130,14 +149,15 @@
     }
 
     input:focus { border-color: var(--yellow); }
-    input::placeholder { color: #94a3b8; }
+    input::placeholder { color: var(--placeholder); }
 
-    /* ── Primary button — dark text on yellow (Brand Guide rule) ── */
+    /* ── Botão primário ── */
     .btn-primary {
       width: 100%;
-      padding: 15px;
+      min-height: 44px; /* touch target mínimo */
+      padding: 12px 16px;
       background: var(--yellow);
-      color: var(--steel);          /* escuro sobre amarelo — regra crítica */
+      color: var(--steel); /* escuro sobre amarelo — regra crítica de contraste */
       border: none;
       border-radius: 10px;
       font-size: 15px;
@@ -152,26 +172,24 @@
     .btn-primary:hover  { background: var(--yellow-dim); }
     .btn-primary:active { transform: scale(0.99); }
     .btn-primary:disabled {
-      background: #fde68a;
-      color: #92400e;
+      background: var(--disabled-bg);
+      color: var(--disabled-text);
       cursor: not-allowed;
     }
 
-    /* ── Error ── */
+    /* ── Mensagem de erro genérico ── */
     .error-msg {
       display: none;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
       border-radius: 8px;
       padding: 12px 16px;
       font-size: 13px;
-      color: #dc2626;
+      color: var(--danger);
       margin-top: 14px;
     }
 
-    /* ── Non-eligible / already redeemed states ── */
-    #ineligible-state, #redeemed-state { display: none; }
-
+    /* ── Ícones de estado ── */
     .state-icon {
       width: 52px;
       height: 52px;
@@ -186,40 +204,17 @@
       width: 26px;
       height: 26px;
       fill: none;
-      stroke: #fff;
+      stroke: var(--white);
       stroke-width: 2.5;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
 
-    .icon-warning { background: #d97706; }
-    .icon-info    { background: #2563eb; }
+    .icon-success { background: var(--success); }
+    .icon-warning { background: var(--warning); }
+    .icon-info    { background: var(--info); }
 
-    /* ── Success state ── */
-    #success-state { display: none; }
-
-    .success-check {
-      width: 52px;
-      height: 52px;
-      background: var(--success);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-    }
-
-    .success-check svg {
-      width: 26px;
-      height: 26px;
-      stroke: #fff;
-      fill: none;
-      stroke-width: 2.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    /* ── Coupon box ── */
+    /* ── Caixa de cupom ── */
     .coupon-box {
       background: var(--yellow-bg);
       border: 2px dashed var(--yellow);
@@ -230,7 +225,7 @@
     }
 
     .coupon-label {
-      font-size: 11px;
+      font-size: 12px; /* floor 12px — CLAUDE.md */
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -245,14 +240,14 @@
       letter-spacing: 4px;
     }
 
-    /* ── Divider ── */
+    /* ── Divisor ── */
     hr {
       border: none;
       border-top: 1px solid var(--border);
       margin: 24px 0;
     }
 
-    /* ── Instructions ── */
+    /* ── Instruções ── */
     .instructions {
       font-size: 13px;
       color: var(--muted);
@@ -261,19 +256,42 @@
 
     .instructions strong { color: var(--steel); }
 
+    /* ── Transição entre estados ── */
+    .state-panel { display: none; }
+
+    .state-panel.state-active {
+      display: block;
+      animation: stateEnter 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes stateEnter {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Reduz movimento se preferido ── */
+    @media (prefers-reduced-motion: reduce) {
+      .card { animation: none; opacity: 1; transform: none; }
+      .state-panel.state-active { animation: none; }
+      .btn-primary { transition: none; }
+      input { transition: none; }
+    }
+
     /* ── Footer ── */
     footer {
       text-align: center;
       padding: 20px 24px;
       font-size: 12px;
-      color: #94a3b8;
+      color: var(--placeholder);
       letter-spacing: 0.3px;
     }
 
     /* ── Mobile ── */
     @media (max-width: 480px) {
-      .card { padding: 32px 24px; border-radius: 16px; }
-      h1 { font-size: 22px; }
+      .page  { padding: 24px 16px; align-items: flex-start; }
+      .card  { padding: 32px 20px; border-radius: 16px; }
+      h1     { font-size: 22px; }
+      h1.h1-sm { font-size: 18px; }
       .coupon-code { font-size: 26px; }
     }
   </style>
@@ -288,7 +306,7 @@
     <div class="card">
 
       <!-- ── Form state ── -->
-      <div id="form-state">
+      <div id="form-state" class="state-panel state-active">
         <p class="eyebrow">Florianópolis</p>
         <div class="heading-wrap">
           <h1>Resgate seu cupom de desconto</h1>
@@ -315,13 +333,13 @@
       </div>
 
       <!-- ── Not eligible state ── -->
-      <div id="ineligible-state">
+      <div id="ineligible-state" class="state-panel">
         <div class="state-icon icon-warning">
           <svg viewBox="0 0 24 24"><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
         </div>
-        <p class="eyebrow" style="text-align:center">Número não encontrado</p>
-        <div class="heading-wrap" style="text-align:center">
-          <h1 style="font-size:20px">Este número não está na lista desta campanha</h1>
+        <p class="eyebrow text-center">Número não encontrado</p>
+        <div class="heading-wrap text-center">
+          <h1 class="h1-sm">Este número não está na lista desta campanha</h1>
           <span class="key-visual"></span>
           <p class="description">Verifique se digitou o número correto com DDD. Se o problema persistir, entre em contato pelo suporte Whoosh.</p>
         </div>
@@ -329,13 +347,13 @@
       </div>
 
       <!-- ── Already redeemed state ── -->
-      <div id="redeemed-state">
+      <div id="redeemed-state" class="state-panel">
         <div class="state-icon icon-info">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         </div>
-        <p class="eyebrow" style="text-align:center">Cupom já resgatado</p>
-        <div class="heading-wrap" style="text-align:center">
-          <h1 style="font-size:20px">Você já resgatou seu cupom!</h1>
+        <p class="eyebrow text-center">Cupom já resgatado</p>
+        <div class="heading-wrap text-center">
+          <h1 class="h1-sm">Você já resgatou seu cupom!</h1>
           <span class="key-visual"></span>
           <p class="description">Seu código já foi gerado anteriormente:</p>
         </div>
@@ -350,26 +368,22 @@
       </div>
 
       <!-- ── Success state ── -->
-      <div id="success-state">
-        <div class="success-check">
+      <div id="success-state" class="state-panel">
+        <div class="state-icon icon-success">
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
-
-        <p class="eyebrow" style="text-align:center">Cupom resgatado!</p>
-        <div class="heading-wrap" style="text-align:center">
+        <p class="eyebrow text-center">Cupom resgatado!</p>
+        <div class="heading-wrap text-center">
           <h1>Pronto, é seu.</h1>
           <span class="key-visual"></span>
           <p class="description">Use o código abaixo no aplicativo Whoosh:</p>
         </div>
-
         <div class="coupon-box">
           <div class="coupon-label">Seu cupom</div>
-          <div class="coupon-code" id="coupon-display">FLORIPA2026</div>
-          <!-- PLACEHOLDER: código genérico até Vic confirmar a mecânica -->
+          <div class="coupon-code" id="coupon-display">—</div>
+          <!-- PLACEHOLDER: código definido pela Vic -->
         </div>
-
         <hr />
-
         <p class="instructions">
           Abra o app Whoosh, acesse <strong>Carteira → Cupons</strong> e insira o código acima para ativar seu desconto.
           <!-- PLACEHOLDER: instrução de uso a confirmar com produto -->
@@ -384,19 +398,26 @@
   <script>
     const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzJwiCyI8EIk4u--j7oo2qP1Ldxm8USyLbUaMEbQVgu2sbUwMfJO0xpeFDC_c494vIFnA/exec";
 
+    const STATES    = ["form-state", "success-state", "ineligible-state", "redeemed-state"];
     const form      = document.getElementById("resgate-form");
     const submitBtn = document.getElementById("submit-btn");
     const errorMsg  = document.getElementById("error-msg");
 
     function showState(id) {
-      ["form-state", "success-state", "ineligible-state", "redeemed-state"]
-        .forEach(s => document.getElementById(s).style.display = s === id ? "block" : "none");
+      STATES.forEach(s => {
+        const el = document.getElementById(s);
+        el.classList.remove("state-active");
+        if (s === id) {
+          // rAF garante que a remoção da classe processa antes da adição (reinicia animação)
+          requestAnimationFrame(() => el.classList.add("state-active"));
+        }
+      });
     }
 
     function resetForm() {
       showState("form-state");
-      submitBtn.disabled    = false;
-      submitBtn.textContent = "Resgatar cupom";
+      submitBtn.disabled     = false;
+      submitBtn.textContent  = "Resgatar cupom";
       errorMsg.style.display = "none";
     }
 
@@ -413,13 +434,11 @@
       return "(" + d.slice(0,2) + ") " + d.slice(2,7) + "-" + d.slice(7);
     }
 
-    const telefoneInput = document.getElementById("telefone");
-    telefoneInput.addEventListener("input", (e) => {
+    document.getElementById("telefone").addEventListener("input", (e) => {
       const cursor = e.target.selectionStart;
       const prev   = e.target.value;
       const next   = formatPhone(prev);
       e.target.value = next;
-      // Reposiciona o cursor se o usuário estiver editando no meio do campo
       const diff = next.length - prev.length;
       e.target.setSelectionRange(cursor + diff, cursor + diff);
     });
@@ -430,12 +449,9 @@
       submitBtn.textContent = "Verificando…";
       errorMsg.style.display = "none";
 
-      const nome     = document.getElementById("nome").value.trim();
-      const telefone = document.getElementById("telefone").value.trim();
-
       const payload = {
-        nome,
-        telefone: normalizePhone(telefone),
+        nome:      document.getElementById("nome").value.trim(),
+        telefone:  normalizePhone(document.getElementById("telefone").value),
         timestamp: new Date().toISOString(),
       };
 
