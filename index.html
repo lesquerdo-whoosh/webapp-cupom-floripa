@@ -4,197 +4,160 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Resgate seu cupom — Whoosh Floripa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --yellow:      #ffb928;   /* Whoosh trademark yellow */
+      --yellow-bg:   #fffbeb;   /* yellow tint for surfaces */
+      --yellow-dim:  #e6a720;   /* hover state */
+      --steel:       #1a2332;   /* Whoosh Steel — main text */
+      --navy:        #0f172a;   /* dark background */
+      --muted:       #64748b;   /* secondary text */
+      --border:      #e2e8f0;
+      --bg:          #f8fafc;
+      --white:       #ffffff;
+      --success:     #16a34a;
+    }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f8fafc;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--steel);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
+    /* ── Header ── */
     header {
-      background: #0f172a;
-      padding: 18px 24px;
+      background: var(--navy);
+      padding: 20px 24px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     header img {
-      height: 28px;
+      height: 26px;
       width: auto;
     }
 
+    /* ── Page wrapper ── */
     .page {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px 24px;
+      padding: 48px 24px;
     }
 
+    /* ── Card ── */
     .card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 40px 32px;
-      max-width: 420px;
+      background: var(--white);
+      border-radius: 20px;
+      padding: 44px 36px;
+      max-width: 440px;
       width: 100%;
-      box-shadow: 0 2px 16px rgba(15, 23, 42, 0.08);
+      box-shadow: 0 4px 24px rgba(15, 23, 42, 0.07);
     }
 
+    /* ── Eyebrow ── */
     .eyebrow {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      color: #64748b;
-      margin-bottom: 12px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* ── Heading + key visual underline (brand guide) ── */
+    .heading-wrap {
+      margin-bottom: 28px;
     }
 
     h1 {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 700;
-      color: #1e293b;
-      margin-bottom: 8px;
+      color: var(--steel);
       line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    /* Yellow key visual underline — Brand Guidelines */
+    .key-visual {
+      display: inline-block;
+      height: 3px;
+      width: 48px;
+      background: var(--yellow);
+      border-radius: 2px;
+      margin-bottom: 14px;
     }
 
     .description {
       font-size: 14px;
-      color: #64748b;
-      line-height: 1.6;
-      margin-bottom: 32px;
+      color: var(--muted);
+      line-height: 1.65;
     }
 
-    .form-group {
-      margin-bottom: 16px;
-    }
+    /* ── Form ── */
+    .form-group { margin-bottom: 18px; }
 
     label {
       display: block;
       font-size: 13px;
       font-weight: 600;
-      color: #1e293b;
-      margin-bottom: 6px;
+      color: var(--steel);
+      margin-bottom: 7px;
     }
 
     input {
       width: 100%;
-      padding: 12px 16px;
-      border: 1.5px solid #e2e8f0;
+      padding: 13px 16px;
+      border: 1.5px solid var(--border);
       border-radius: 10px;
       font-size: 15px;
-      color: #1e293b;
-      background: #fff;
+      font-family: inherit;
+      color: var(--steel);
+      background: var(--white);
       transition: border-color 0.15s;
       outline: none;
     }
 
-    input:focus {
-      border-color: #ffb928;
-    }
+    input:focus { border-color: var(--yellow); }
+    input::placeholder { color: #94a3b8; }
 
-    input::placeholder {
-      color: #94a3b8;
-    }
-
-    button {
+    /* ── Primary button — dark text on yellow (Brand Guide rule) ── */
+    .btn-primary {
       width: 100%;
-      padding: 14px;
-      background: #ffb928;
-      color: #1e293b;        /* texto escuro — regra crítica de contraste */
+      padding: 15px;
+      background: var(--yellow);
+      color: var(--steel);          /* escuro sobre amarelo — regra crítica */
       border: none;
       border-radius: 10px;
       font-size: 15px;
       font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 0.3px;
       cursor: pointer;
-      margin-top: 8px;
+      margin-top: 6px;
       transition: background 0.15s, transform 0.1s;
-      letter-spacing: 0.2px;
     }
 
-    button:hover {
-      background: #e6a720;
-    }
-
-    button:active {
-      transform: scale(0.99);
-    }
-
-    button:disabled {
+    .btn-primary:hover  { background: var(--yellow-dim); }
+    .btn-primary:active { transform: scale(0.99); }
+    .btn-primary:disabled {
       background: #fde68a;
       color: #92400e;
       cursor: not-allowed;
     }
 
-    /* Success state */
-    #success-state { display: none; }
-
-    .success-icon {
-      width: 48px;
-      height: 48px;
-      background: #16a34a;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-    }
-
-    .success-icon svg {
-      width: 24px;
-      height: 24px;
-      stroke: #fff;
-      fill: none;
-      stroke-width: 2.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .coupon-box {
-      background: #fffbeb;
-      border: 2px dashed #ffb928;
-      border-radius: 12px;
-      padding: 24px;
-      margin: 24px 0;
-      text-align: center;
-    }
-
-    .coupon-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 10px;
-    }
-
-    .coupon-code {
-      font-size: 30px;
-      font-weight: 800;
-      color: #1e293b;
-      letter-spacing: 3px;
-    }
-
-    .divider {
-      border: none;
-      border-top: 1px solid #e2e8f0;
-      margin: 24px 0;
-    }
-
-    .coupon-instructions {
-      font-size: 13px;
-      color: #64748b;
-      line-height: 1.6;
-    }
-
-    .coupon-instructions strong {
-      color: #1e293b;
-    }
-
+    /* ── Error ── */
     .error-msg {
       display: none;
       background: #fef2f2;
@@ -203,14 +166,89 @@
       padding: 12px 16px;
       font-size: 13px;
       color: #dc2626;
-      margin-top: 12px;
+      margin-top: 14px;
     }
 
+    /* ── Success state ── */
+    #success-state { display: none; }
+
+    .success-check {
+      width: 52px;
+      height: 52px;
+      background: var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .success-check svg {
+      width: 26px;
+      height: 26px;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ── Coupon box ── */
+    .coupon-box {
+      background: var(--yellow-bg);
+      border: 2px dashed var(--yellow);
+      border-radius: 14px;
+      padding: 28px 24px;
+      margin: 24px 0;
+      text-align: center;
+    }
+
+    .coupon-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .coupon-code {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--steel);
+      letter-spacing: 4px;
+    }
+
+    /* ── Divider ── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    /* ── Instructions ── */
+    .instructions {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .instructions strong { color: var(--steel); }
+
+    /* ── Footer ── */
     footer {
       text-align: center;
       padding: 20px 24px;
       font-size: 12px;
       color: #94a3b8;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 480px) {
+      .card { padding: 32px 24px; border-radius: 16px; }
+      h1 { font-size: 22px; }
+      .coupon-code { font-size: 26px; }
     }
   </style>
 </head>
@@ -223,11 +261,14 @@
   <div class="page">
     <div class="card">
 
-      <!-- Form state -->
+      <!-- ── Form state ── -->
       <div id="form-state">
         <p class="eyebrow">Florianópolis</p>
-        <h1>Resgate seu cupom de desconto</h1>
-        <p class="description">Preencha seus dados abaixo para receber seu cupom exclusivo Whoosh.</p>
+        <div class="heading-wrap">
+          <h1>Resgate seu cupom de desconto</h1>
+          <span class="key-visual"></span>
+          <p class="description">Preencha seus dados abaixo para receber seu cupom exclusivo Whoosh.</p>
+        </div>
 
         <form id="resgate-form">
           <div class="form-group">
@@ -238,8 +279,8 @@
             <label for="telefone">WhatsApp</label>
             <input type="tel" id="telefone" name="telefone" placeholder="(48) 99999-9999" required autocomplete="tel" />
           </div>
-          <!-- PLACEHOLDER: adicionar campos conforme definição da Vic -->
-          <button type="submit" id="submit-btn">Resgatar cupom</button>
+          <!-- PLACEHOLDER: campos adicionais conforme definição da Vic -->
+          <button type="submit" id="submit-btn" class="btn-primary">Resgatar cupom</button>
         </form>
 
         <div class="error-msg" id="error-msg">
@@ -247,25 +288,28 @@
         </div>
       </div>
 
-      <!-- Success state -->
+      <!-- ── Success state ── -->
       <div id="success-state">
-        <div class="success-icon">
+        <div class="success-check">
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
 
-        <p class="eyebrow" style="text-align:center;">Cupom resgatado!</p>
-        <h1 style="text-align:center; margin-bottom: 4px;">Pronto, é seu.</h1>
-        <p class="description" style="text-align:center;">Use o código abaixo no aplicativo Whoosh:</p>
+        <p class="eyebrow" style="text-align:center">Cupom resgatado!</p>
+        <div class="heading-wrap" style="text-align:center">
+          <h1>Pronto, é seu.</h1>
+          <span class="key-visual"></span>
+          <p class="description">Use o código abaixo no aplicativo Whoosh:</p>
+        </div>
 
         <div class="coupon-box">
           <div class="coupon-label">Seu cupom</div>
           <div class="coupon-code" id="coupon-display">FLORIPA2026</div>
-          <!-- PLACEHOLDER: código definido pela Vic (genérico vs. único) -->
+          <!-- PLACEHOLDER: código genérico até Vic confirmar a mecânica -->
         </div>
 
-        <hr class="divider" />
+        <hr />
 
-        <p class="coupon-instructions">
+        <p class="instructions">
           Abra o app Whoosh, acesse <strong>Carteira → Cupons</strong> e insira o código acima para ativar seu desconto.
           <!-- PLACEHOLDER: instrução de uso a confirmar com produto -->
         </p>
@@ -274,30 +318,27 @@
     </div>
   </div>
 
-  <footer>Whoosh Brasil &middot; Florianópolis</footer>
+  <footer>Whoosh Brasil &middot; Florianópolis &middot; 2026</footer>
 
   <script>
-    // PLACEHOLDER: substituir pela URL real do Google Apps Script após configuração
     const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzJwiCyI8EIk4u--j7oo2qP1Ldxm8USyLbUaMEbQVgu2sbUwMfJO0xpeFDC_c494vIFnA/exec";
+    const COUPON_CODE = "FLORIPA2026"; // PLACEHOLDER: confirmar com Vic
 
-    // PLACEHOLDER: código genérico até Vic confirmar a mecânica
-    const COUPON_CODE = "FLORIPA2026";
-
-    const form = document.getElementById("resgate-form");
+    const form      = document.getElementById("resgate-form");
     const submitBtn = document.getElementById("submit-btn");
-    const errorMsg = document.getElementById("error-msg");
+    const errorMsg  = document.getElementById("error-msg");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Enviando...";
+      submitBtn.disabled    = true;
+      submitBtn.textContent = "Enviando…";
       errorMsg.style.display = "none";
 
       const payload = {
-        nome: document.getElementById("nome").value.trim(),
-        telefone: document.getElementById("telefone").value.trim(),
+        nome:      document.getElementById("nome").value.trim(),
+        telefone:  document.getElementById("telefone").value.trim(),
         timestamp: new Date().toISOString(),
-        cupom: COUPON_CODE,
+        cupom:     COUPON_CODE,
       };
 
       try {
@@ -309,13 +350,13 @@
         });
 
         document.getElementById("coupon-display").textContent = COUPON_CODE;
-        document.getElementById("form-state").style.display = "none";
+        document.getElementById("form-state").style.display   = "none";
         document.getElementById("success-state").style.display = "block";
 
       } catch (err) {
-        errorMsg.style.display = "block";
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Resgatar cupom";
+        errorMsg.style.display    = "block";
+        submitBtn.disabled        = false;
+        submitBtn.textContent     = "Resgatar cupom";
       }
     });
   </script>
