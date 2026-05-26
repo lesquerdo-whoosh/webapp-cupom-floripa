@@ -311,14 +311,10 @@
         <div class="heading-wrap">
           <h1>Resgate seu cupom de desconto</h1>
           <span class="key-visual"></span>
-          <p class="description">Preencha seus dados abaixo para receber seu cupom exclusivo Whoosh.</p>
+          <p class="description">Digite seu WhatsApp para receber seu cupom exclusivo Whoosh.</p>
         </div>
 
         <form id="resgate-form">
-          <div class="form-group">
-            <label for="nome">Nome completo</label>
-            <input type="text" id="nome" name="nome" placeholder="Seu nome" required autocomplete="name" />
-          </div>
           <div class="form-group">
             <label for="telefone">WhatsApp</label>
             <input type="tel" id="telefone" name="telefone" placeholder="(DDD) 99999-9999" required autocomplete="tel" inputmode="numeric" />
@@ -450,7 +446,6 @@
       errorMsg.style.display = "none";
 
       const payload = {
-        nome:      document.getElementById("nome").value.trim(),
         telefone:  normalizePhone(document.getElementById("telefone").value),
         timestamp: new Date().toISOString(),
       };
