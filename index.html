@@ -9,195 +9,272 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f5f5f5;
+      background: #f8fafc;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #0f172a;
+      padding: 18px 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+    }
+
+    header img {
+      height: 28px;
+      width: auto;
+    }
+
+    .page {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
     }
 
     .card {
-      background: #fff;
+      background: #ffffff;
       border-radius: 16px;
       padding: 40px 32px;
       max-width: 420px;
       width: 100%;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-      text-align: center;
+      box-shadow: 0 2px 16px rgba(15, 23, 42, 0.08);
     }
 
-    .logo {
-      font-size: 28px;
-      font-weight: 800;
-      color: #1a1a1a;
-      letter-spacing: -1px;
-      margin-bottom: 8px;
-    }
-
-    .logo span { color: #00c853; }
-
-    .subtitle {
-      font-size: 14px;
-      color: #888;
-      margin-bottom: 32px;
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 12px;
     }
 
     h1 {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 700;
-      color: #1a1a1a;
+      color: #1e293b;
       margin-bottom: 8px;
+      line-height: 1.2;
     }
 
     .description {
       font-size: 14px;
-      color: #666;
-      line-height: 1.5;
+      color: #64748b;
+      line-height: 1.6;
       margin-bottom: 32px;
     }
 
     .form-group {
       margin-bottom: 16px;
-      text-align: left;
     }
 
     label {
       display: block;
       font-size: 13px;
       font-weight: 600;
-      color: #444;
+      color: #1e293b;
       margin-bottom: 6px;
     }
 
     input {
       width: 100%;
       padding: 12px 16px;
-      border: 1.5px solid #e0e0e0;
+      border: 1.5px solid #e2e8f0;
       border-radius: 10px;
       font-size: 15px;
-      color: #1a1a1a;
-      transition: border-color 0.2s;
+      color: #1e293b;
+      background: #fff;
+      transition: border-color 0.15s;
       outline: none;
     }
 
-    input:focus { border-color: #00c853; }
+    input:focus {
+      border-color: #ffb928;
+    }
+
+    input::placeholder {
+      color: #94a3b8;
+    }
 
     button {
       width: 100%;
       padding: 14px;
-      background: #00c853;
-      color: #fff;
+      background: #ffb928;
+      color: #1e293b;        /* texto escuro — regra crítica de contraste */
       border: none;
       border-radius: 10px;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
       margin-top: 8px;
-      transition: background 0.2s;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: 0.2px;
     }
 
-    button:hover { background: #00b347; }
-    button:disabled { background: #b2dfdb; cursor: not-allowed; }
+    button:hover {
+      background: #e6a720;
+    }
+
+    button:active {
+      transform: scale(0.99);
+    }
+
+    button:disabled {
+      background: #fde68a;
+      color: #92400e;
+      cursor: not-allowed;
+    }
 
     /* Success state */
-    .success { display: none; }
+    #success-state { display: none; }
+
+    .success-icon {
+      width: 48px;
+      height: 48px;
+      background: #16a34a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .success-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
     .coupon-box {
-      background: #f0fdf4;
-      border: 2px dashed #00c853;
+      background: #fffbeb;
+      border: 2px dashed #ffb928;
       border-radius: 12px;
       padding: 24px;
       margin: 24px 0;
+      text-align: center;
     }
 
     .coupon-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: #00c853;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
+      letter-spacing: 1.5px;
+      margin-bottom: 10px;
     }
 
     .coupon-code {
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 800;
-      color: #1a1a1a;
-      letter-spacing: 2px;
+      color: #1e293b;
+      letter-spacing: 3px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 24px 0;
     }
 
     .coupon-instructions {
       font-size: 13px;
-      color: #666;
-      line-height: 1.5;
-      margin-top: 16px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .coupon-instructions strong {
+      color: #1e293b;
     }
 
     .error-msg {
       display: none;
-      background: #fff3f3;
-      border: 1px solid #ffcdd2;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
       border-radius: 8px;
-      padding: 12px;
+      padding: 12px 16px;
       font-size: 13px;
-      color: #c62828;
+      color: #dc2626;
       margin-top: 12px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px 24px;
+      font-size: 12px;
+      color: #94a3b8;
     }
   </style>
 </head>
 <body>
-  <div class="card">
 
-    <!-- Form state -->
-    <div id="form-state">
-      <div class="logo">WHO<span>OSH</span></div>
-      <div class="subtitle">Florianópolis</div>
+  <header>
+    <img src="whoosh-logo.png" alt="Whoosh" />
+  </header>
 
-      <h1>Resgate seu cupom</h1>
-      <p class="description">
-        Preencha seus dados abaixo para receber seu cupom de desconto exclusivo.
-      </p>
+  <div class="page">
+    <div class="card">
 
-      <form id="resgate-form">
-        <div class="form-group">
-          <label for="nome">Nome completo</label>
-          <input type="text" id="nome" name="nome" placeholder="Seu nome" required autocomplete="name" />
+      <!-- Form state -->
+      <div id="form-state">
+        <p class="eyebrow">Florianópolis</p>
+        <h1>Resgate seu cupom de desconto</h1>
+        <p class="description">Preencha seus dados abaixo para receber seu cupom exclusivo Whoosh.</p>
+
+        <form id="resgate-form">
+          <div class="form-group">
+            <label for="nome">Nome completo</label>
+            <input type="text" id="nome" name="nome" placeholder="Seu nome" required autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label for="telefone">WhatsApp</label>
+            <input type="tel" id="telefone" name="telefone" placeholder="(48) 99999-9999" required autocomplete="tel" />
+          </div>
+          <!-- PLACEHOLDER: adicionar campos conforme definição da Vic -->
+          <button type="submit" id="submit-btn">Resgatar cupom</button>
+        </form>
+
+        <div class="error-msg" id="error-msg">
+          Algo deu errado. Tente novamente em instantes.
         </div>
-        <div class="form-group">
-          <label for="telefone">WhatsApp</label>
-          <input type="tel" id="telefone" name="telefone" placeholder="(48) 99999-9999" required autocomplete="tel" />
-        </div>
-        <!-- PLACEHOLDER: adicionar campos conforme definição da Vic -->
-        <button type="submit" id="submit-btn">Resgatar cupom</button>
-      </form>
-
-      <div class="error-msg" id="error-msg">
-        Algo deu errado. Tente novamente ou entre em contato via WhatsApp.
-      </div>
-    </div>
-
-    <!-- Success state -->
-    <div class="success" id="success-state">
-      <div class="logo">WHO<span>OSH</span></div>
-      <div class="subtitle">Florianópolis</div>
-
-      <h1>Cupom resgatado!</h1>
-      <p class="description">Use o código abaixo no aplicativo Whoosh:</p>
-
-      <div class="coupon-box">
-        <div class="coupon-label">Seu cupom</div>
-        <div class="coupon-code" id="coupon-display">FLORIPA2026</div>
-        <!-- PLACEHOLDER: código será definido pela Vic (genérico vs. único) -->
       </div>
 
-      <p class="coupon-instructions">
-        Abra o app Whoosh, acesse <strong>Carteira → Cupons</strong> e insira o código acima.
-        <!-- PLACEHOLDER: instrução de uso a confirmar com time de produto -->
-      </p>
-    </div>
+      <!-- Success state -->
+      <div id="success-state">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
 
+        <p class="eyebrow" style="text-align:center;">Cupom resgatado!</p>
+        <h1 style="text-align:center; margin-bottom: 4px;">Pronto, é seu.</h1>
+        <p class="description" style="text-align:center;">Use o código abaixo no aplicativo Whoosh:</p>
+
+        <div class="coupon-box">
+          <div class="coupon-label">Seu cupom</div>
+          <div class="coupon-code" id="coupon-display">FLORIPA2026</div>
+          <!-- PLACEHOLDER: código definido pela Vic (genérico vs. único) -->
+        </div>
+
+        <hr class="divider" />
+
+        <p class="coupon-instructions">
+          Abra o app Whoosh, acesse <strong>Carteira → Cupons</strong> e insira o código acima para ativar seu desconto.
+          <!-- PLACEHOLDER: instrução de uso a confirmar com produto -->
+        </p>
+      </div>
+
+    </div>
   </div>
+
+  <footer>Whoosh Brasil &middot; Florianópolis</footer>
 
   <script>
     // PLACEHOLDER: substituir pela URL real do Google Apps Script após configuração
@@ -224,16 +301,12 @@
       };
 
       try {
-        // Se webhook não configurado ainda, simula sucesso em dev
-        if (WEBHOOK_URL === "SUBSTITUIR_PELA_URL_DO_APPS_SCRIPT") {
-          await new Promise(r => setTimeout(r, 800)); // simula latência
-        } else {
-          await fetch(WEBHOOK_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-        }
+        await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          mode: "no-cors",
+        });
 
         document.getElementById("coupon-display").textContent = COUPON_CODE;
         document.getElementById("form-state").style.display = "none";
@@ -246,5 +319,6 @@
       }
     });
   </script>
+
 </body>
 </html>
